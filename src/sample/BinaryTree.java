@@ -25,23 +25,32 @@ public class BinaryTree {
         return get(n - 1, 2 * subTreeNum + 1);
     }
 
-    public void insert(int n, Node node) {
-        if (n >= capacity) {
-            Node[] values = new Node[capacity];
-            System.arraycopy(nodes, 0, values, 0, nodes.length);
-            capacity *= 2;
-            nodes = new Node[capacity];
-            System.arraycopy(values, 0, nodes, 0, values.length);
-        }
-        if (nodes[n] == null) {
-            nodes[n] = node;
+    public void insert(Node node) {
+        insert(1, node);
+    }
+
+    public void delete(int n) {
+        if (n >= capacity || nodes[n] == null) return;
+        if (nodes[2 * n + 1] == null && nodes[2 * n] == null) nodes[n] = null; //нет потомков
+        if (nodes[2 * n] != null && nodes[2 * n + 1] == null) { //только левый потомок
+            nodes[n] = nodes[2 * n];
+            nodes[2 * n] = null;
             return;
         }
-        if (node.compareTo(nodes[n]) < 0) {
-            insert(2 * n, node);
-        } else {
-            insert(2 * n + 1, node);
+        if (nodes[2 * n] == null && nodes[2 * n + 1] != null) { //только правый потомок
+            nodes[n] = nodes[2 * n + 1];
+            nodes[2 * n + 1] = null;
+            return;
         }
+        int max = 2 * n + 1;
+        while (2 * max < capacity && nodes[2 * max] != null) {
+            max *= 2;
+        }
+        if (2 * max + 1 < capacity && nodes[2 * max + 1] != null) {
+            max = 2 * max + 1;
+        }
+        nodes[n] = nodes[max];
+        nodes[max] = null;
     }
 
     public void balance() {
@@ -81,6 +90,25 @@ public class BinaryTree {
         subTree[nodeCount++] = nodes[subTreeNum];
         nodeCount = set(subTree, 2 * subTreeNum + 1, nodeCount);
         return nodeCount;
+    }
+
+    private void insert(int n, Node node) {
+        if (n >= capacity) {
+            Node[] values = new Node[capacity];
+            System.arraycopy(nodes, 0, values, 0, nodes.length);
+            capacity = 2 * capacity + 2;
+            nodes = new Node[capacity];
+            System.arraycopy(values, 0, nodes, 0, values.length);
+        }
+        if (nodes[n] == null) {
+            nodes[n] = node;
+            return;
+        }
+        if (node.compareTo(nodes[n]) < 0) {
+            insert(2 * n, node);
+        } else {
+            insert(2 * n + 1, node);
+        }
     }
 
     private void balance(Node[] subTree, int a, int b) {

@@ -11,12 +11,14 @@ public class Main extends Application {
     public static void main(String[] args) {
         //launch(args);
         BinaryTree tree = new BinaryTree();
-        for (int i = 0; i < 10; i++) {
-            tree.insert(1, new Node(i));
+        for (int i = 0; i < 15; i++) {
+            tree.insert(new Node(i));
             if (i > 2) {
                 tree.balance();
             }
         }
+        tree.delete(1);
+        tree.balance();
         System.out.println(tree.toString());
     }
 
