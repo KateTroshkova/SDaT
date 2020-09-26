@@ -10,9 +10,9 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         //launch(args);
-        BinaryTree tree = new BinaryTree();
+        BinaryTree<Node<Integer>> tree = new BinaryTree<>();
         for (int i = 0; i < 15; i++) {
-            tree.insert(new Node(i));
+            tree.insert(new Node<Integer>(i));
             if (i > 2) {
                 tree.balance();
             }

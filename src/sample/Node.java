@@ -1,18 +1,18 @@
 package sample;
 
-public class Node implements Comparable<Node> {
+public class Node<T extends Comparable<T>> implements Comparable<Node<T>> {
 
-    private int value;
+    private T value;
 
-    public Node(int n) {
+    public Node(T n) {
         value = n;
     }
 
-    public int getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(T value) {
         this.value = value;
     }
 
@@ -22,7 +22,7 @@ public class Node implements Comparable<Node> {
     }
 
     @Override
-    public int compareTo(Node o) {
-        return Integer.compare(value, o.value);
+    public int compareTo(Node<T> o) {
+        return value.compareTo(o.value);
     }
 }
