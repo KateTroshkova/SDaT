@@ -9,7 +9,15 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
+        BinaryTree tree = new BinaryTree();
+        for (int i = 0; i < 10; i++) {
+            tree.insert(1, new Node(i));
+            if (i > 2) {
+                tree.balance();
+            }
+        }
+        System.out.println(tree.toString());
     }
 
     @Override
