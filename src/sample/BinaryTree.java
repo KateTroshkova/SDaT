@@ -62,6 +62,10 @@ public class BinaryTree {
         balance(subTree, 0, size - 1);
     }
 
+    public void forEach(OnNextListener onNextListener) {
+        forEach(1, onNextListener);
+    }
+
     @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
@@ -117,5 +121,12 @@ public class BinaryTree {
         insert(1, subTree[m]);
         balance(subTree, a, m - 1);
         balance(subTree, m + 1, b);
+    }
+
+    private void forEach(int subTreeNum, OnNextListener listener) {
+        if (subTreeNum >= capacity || nodes[subTreeNum] == null) return;
+        forEach(2 * subTreeNum, listener);
+        listener.toDo(nodes[subTreeNum]);
+        forEach(2 * subTreeNum + 1, listener);
     }
 }
