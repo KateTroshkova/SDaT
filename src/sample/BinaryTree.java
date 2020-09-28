@@ -27,7 +27,7 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
     @Override
     public T get(int position) {
         if (position < 1 || position >= capacity) return null;
-        return nodes[position];
+        return get(position, 1);
     }
 
     @Override
@@ -37,26 +37,27 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
 
     @Override
     public void delete(int position) {
-        if (position < 1 || position >= capacity || nodes[position] == null) return;
-        if (nodes[2 * position + 1] == null && nodes[2 * position] == null) nodes[position] = null; //нет потомков
-        if (nodes[2 * position] != null && nodes[2 * position + 1] == null) { //только левый потомок
-            nodes[position] = nodes[2 * position];
-            nodes[2 * position] = null;
+        if (position < 1 || position >= capacity) return;
+        int index = getIndex(position, 1);
+        if (nodes[2 * index + 1] == null && nodes[2 * index] == null) nodes[index] = null; //нет потомков
+        if (nodes[2 * index] != null && nodes[2 * index + 1] == null) { //только левый потомок
+            nodes[index] = nodes[2 * index];
+            nodes[2 * index] = null;
             return;
         }
-        if (nodes[2 * position] == null && nodes[2 * position + 1] != null) { //только правый потомок
-            nodes[position] = nodes[2 * position + 1];
-            nodes[2 * position + 1] = null;
+        if (nodes[2 * index] == null && nodes[2 * index + 1] != null) { //только правый потомок
+            nodes[index] = nodes[2 * index + 1];
+            nodes[2 * index + 1] = null;
             return;
         }
-        int max = 2 * position + 1;
+        int max = 2 * index + 1;
         while (2 * max < capacity && nodes[2 * max] != null) {
             max *= 2;
         }
         if (2 * max + 1 < capacity && nodes[2 * max + 1] != null) {
             max = 2 * max + 1;
         }
-        nodes[position] = nodes[max];
+        nodes[index] = nodes[max];
         nodes[max] = null;
     }
 
@@ -99,6 +100,24 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
         res += nodes[subTreeNum];
         res = toStringRecursive(2 * subTreeNum + 1, level + 1, res);
         return res;
+    }
+
+    private T get(int position, int subTreeNum) {
+        if (position < 1 || position >= capacity || position > size(subTreeNum)) return null;
+        int leftNum = size(2 * subTreeNum);
+        if (position <= leftNum) return get(position, 2 * subTreeNum);
+        position -= leftNum;
+        if (position - 1 == 0) return nodes[subTreeNum];
+        return get(position - 1, 2 * subTreeNum + 1);
+    }
+
+    private int getIndex(int position, int subTreeNum) {
+        if (position < 1 || position >= capacity || position > size(subTreeNum)) return 0;
+        int leftNum = size(2 * subTreeNum);
+        if (position <= leftNum) return getIndex(position, 2 * subTreeNum);
+        position -= leftNum;
+        if (position - 1 == 0) return subTreeNum;
+        return getIndex(position - 1, 2 * subTreeNum + 1);
     }
 
     private int set(T[] subTree, int subTreeNum, int nodeCount) {
