@@ -9,59 +9,58 @@ package sample;
  * and not returned or exposed to client code.
  */
 @SuppressWarnings("unchecked")
-public class BinaryTree<T extends Comparable<T>> {
+public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
 
     private T[] nodes;
     private int capacity;
 
     public BinaryTree() {
-        //Ну мы же ебанутые, у нас же нумерация поддеревьев с 1
-        //У нас же и нумерация массива с 1...
         initEmpty();
     }
 
-    public int size(int n) {
-        if (n >= capacity || nodes[n] == null) return 0;
-        return 1 + size(2 * n) + size(2 * n + 1);
+    @Override
+    public int size(int subTreeNum) {
+        if (subTreeNum >= capacity || nodes[subTreeNum] == null) return 0;
+        return 1 + size(2 * subTreeNum) + size(2 * subTreeNum + 1);
     }
 
-    public T get(int n, int subTreeNum) {
-        if (n >= capacity || n >= size(subTreeNum)) return null;
-        int leftNum = size(2 * n);
-        if (n < leftNum) return get(n, 2 * subTreeNum);
-        n -= leftNum;
-        if (n - 1 == 0) return nodes[subTreeNum];
-        return get(n - 1, 2 * subTreeNum + 1);
+    @Override
+    public T get(int position) {
+        if (position < 1 || position >= capacity) return null;
+        return nodes[position];
     }
 
+    @Override
     public void insert(T node) {
         insert(1, node);
     }
 
-    public void delete(int n) {
-        if (n >= capacity || nodes[n] == null) return;
-        if (nodes[2 * n + 1] == null && nodes[2 * n] == null) nodes[n] = null; //нет потомков
-        if (nodes[2 * n] != null && nodes[2 * n + 1] == null) { //только левый потомок
-            nodes[n] = nodes[2 * n];
-            nodes[2 * n] = null;
+    @Override
+    public void delete(int position) {
+        if (position < 1 || position >= capacity || nodes[position] == null) return;
+        if (nodes[2 * position + 1] == null && nodes[2 * position] == null) nodes[position] = null; //нет потомков
+        if (nodes[2 * position] != null && nodes[2 * position + 1] == null) { //только левый потомок
+            nodes[position] = nodes[2 * position];
+            nodes[2 * position] = null;
             return;
         }
-        if (nodes[2 * n] == null && nodes[2 * n + 1] != null) { //только правый потомок
-            nodes[n] = nodes[2 * n + 1];
-            nodes[2 * n + 1] = null;
+        if (nodes[2 * position] == null && nodes[2 * position + 1] != null) { //только правый потомок
+            nodes[position] = nodes[2 * position + 1];
+            nodes[2 * position + 1] = null;
             return;
         }
-        int max = 2 * n + 1;
+        int max = 2 * position + 1;
         while (2 * max < capacity && nodes[2 * max] != null) {
             max *= 2;
         }
         if (2 * max + 1 < capacity && nodes[2 * max + 1] != null) {
             max = 2 * max + 1;
         }
-        nodes[n] = nodes[max];
+        nodes[position] = nodes[max];
         nodes[max] = null;
     }
 
+    @Override
     public void balance() {
         int size = size(1);
         int nodeCount = 0;
@@ -71,20 +70,18 @@ public class BinaryTree<T extends Comparable<T>> {
         balance(subTree, 0, size - 1);
     }
 
+    @Override
     public void forEach(OnNextListener<T> onNextListener) {
         forEach(1, onNextListener);
     }
 
     @Override
     public String toString() {
-        StringBuilder res = new StringBuilder();
-        for (T node : nodes) {
-            res.append(node).append(" ");
-        }
-        return res.toString(); //toStringRecursive(1, 0, "");
+        return toStringRecursive(1, 0, "");
     }
 
     private void initEmpty() {
+        //Нумерация начинается с 1, т.к. данные храним в массиве
         capacity = 2;
         nodes = (T[]) new Comparable[capacity];
     }
@@ -92,7 +89,14 @@ public class BinaryTree<T extends Comparable<T>> {
     private String toStringRecursive(int subTreeNum, int level, String res) {
         if (subTreeNum >= capacity || nodes[subTreeNum] == null) return res;
         res = toStringRecursive(2 * subTreeNum, level + 1, res);
-        res += "\n" + "level = " + level + " value = " + nodes[subTreeNum];
+        res += "\n";
+        StringBuilder resBuilder = new StringBuilder(res);
+        int maxLevel = (int) Math.sqrt(capacity);
+        for (int i = 0; i < maxLevel - level; i++) {
+            resBuilder.append("    ");
+        }
+        res = resBuilder.toString();
+        res += nodes[subTreeNum];
         res = toStringRecursive(2 * subTreeNum + 1, level + 1, res);
         return res;
     }
@@ -105,22 +109,23 @@ public class BinaryTree<T extends Comparable<T>> {
         return nodeCount;
     }
 
-    private void insert(int n, T node) {
-        if (n >= capacity) {
+    private void insert(int position, T node) {
+        if (position < 1) return;
+        if (position >= capacity) {
             T[] values = (T[]) new Comparable[capacity];
             System.arraycopy(nodes, 0, values, 0, nodes.length);
             capacity = 2 * capacity + 2;
             nodes = (T[]) new Comparable[capacity];
             System.arraycopy(values, 0, nodes, 0, values.length);
         }
-        if (nodes[n] == null) {
-            nodes[n] = node;
+        if (nodes[position] == null) {
+            nodes[position] = node;
             return;
         }
-        if (node.compareTo(nodes[n]) < 0) {
-            insert(2 * n, node);
+        if (node.compareTo(nodes[position]) < 0) {
+            insert(2 * position, node);
         } else {
-            insert(2 * n + 1, node);
+            insert(2 * position + 1, node);
         }
     }
 
