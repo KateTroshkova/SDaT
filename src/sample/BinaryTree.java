@@ -1,5 +1,7 @@
 package sample;
 
+import java.io.InputStreamReader;
+
 /**
  * Array cast is one of the suggested ways of implementing a generic collection in Effective Java; Item 26.
  * No type errors, no need to cast the array repeatedly.
@@ -8,13 +10,25 @@ package sample;
  * This behavior is safe as long as the cast array is used internally (e.g. to back a data structure),
  * and not returned or exposed to client code.
  */
-@SuppressWarnings("unchecked")
-public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
+public class BinaryTree implements BinaryTreeApi {
 
-    private T[] nodes;
+    private Object[] nodes;
     private int capacity;
+    private UserTypeBuilder builder;
 
     public BinaryTree() {
+        initEmpty();
+    }
+
+    @Override
+    public UserTypeBuilder getBuilder() {
+        return builder;
+    }
+
+    @Override
+    public void setBuilder(UserTypeBuilder builder) {
+        this.builder = builder;
+        // can not work with old values
         initEmpty();
     }
 
@@ -25,14 +39,33 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
     }
 
     @Override
-    public T get(int position) {
+    public Object get(int position) {
         if (position < 1 || position >= capacity) return null;
         return get(position, 1);
     }
 
-    @Override
-    public void insert(T node) {
+    // not safe!
+    /*@Override
+    public void insert(Object node) {
         insert(1, node);
+    }*/
+
+    @Override
+    public void insertRnd() {
+        insert(1, builder.create());
+    }
+
+    @Override
+    public boolean insertNext(InputStreamReader reader) {
+        Object value = builder.readValue(reader);
+        if (value == null) return false;
+        insert(1, value);
+        return true;
+    }
+
+    @Override
+    public void insertFrom(String source) {
+        insert(1, builder.parseValue(source));
     }
 
     @Override
@@ -62,17 +95,21 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
     }
 
     @Override
-    public void balance() {
+    public BinaryTree balance() {
         int size = size(1);
         int nodeCount = 0;
-        T[] subTree = (T[]) new Comparable[size];
+        Object[] subTree = new Object[size];
         set(subTree, 1, nodeCount);
-        initEmpty();
-        balance(subTree, 0, size - 1);
+        BinaryTree balanced = new BinaryTree();
+        balanced.capacity = capacity;
+        balanced.nodes = new Object[capacity];
+        balanced.builder = builder;
+        balanced.balance(subTree, 0, size - 1);
+        return balanced;
     }
 
     @Override
-    public void forEach(OnNextListener<T> onNextListener) {
+    public void forEach(OnNextListener onNextListener) {
         forEach(1, onNextListener);
     }
 
@@ -84,7 +121,7 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
     private void initEmpty() {
         //Нумерация начинается с 1, т.к. данные храним в массиве
         capacity = 2;
-        nodes = (T[]) new Comparable[capacity];
+        nodes = new Object[capacity];
     }
 
     private String toStringRecursive(int subTreeNum, int level, String res) {
@@ -97,12 +134,12 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
             resBuilder.append("    ");
         }
         res = resBuilder.toString();
-        res += nodes[subTreeNum];
+        res += builder.toString(nodes[subTreeNum]);
         res = toStringRecursive(2 * subTreeNum + 1, level + 1, res);
         return res;
     }
 
-    private T get(int position, int subTreeNum) {
+    private Object get(int position, int subTreeNum) {
         if (position < 1 || position >= capacity || position > size(subTreeNum)) return null;
         int leftNum = size(2 * subTreeNum);
         if (position <= leftNum) return get(position, 2 * subTreeNum);
@@ -120,35 +157,35 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
         return getIndex(position - 1, 2 * subTreeNum + 1);
     }
 
-    private int set(T[] subTree, int subTreeNum, int nodeCount) {
+    private int set(Object[] subTree, int subTreeNum, int nodeCount) {
         if (subTreeNum >= capacity || nodes[subTreeNum] == null) return nodeCount;
         nodeCount = set(subTree, 2 * subTreeNum, nodeCount);
-        subTree[nodeCount++] = nodes[subTreeNum];
+        subTree[nodeCount++] = builder.clone(nodes[subTreeNum]);
         nodeCount = set(subTree, 2 * subTreeNum + 1, nodeCount);
         return nodeCount;
     }
 
-    private void insert(int position, T node) {
+    private void insert(int position, Object node) {
         if (position < 1) return;
         if (position >= capacity) {
-            T[] values = (T[]) new Comparable[capacity];
+            Object[] values = new Object[capacity];
             System.arraycopy(nodes, 0, values, 0, nodes.length);
             capacity = 2 * capacity + 2;
-            nodes = (T[]) new Comparable[capacity];
+            nodes = new Object[capacity];
             System.arraycopy(values, 0, nodes, 0, values.length);
         }
         if (nodes[position] == null) {
             nodes[position] = node;
             return;
         }
-        if (node.compareTo(nodes[position]) < 0) {
+        if (builder.compare(node, nodes[position]) < 0) {
             insert(2 * position, node);
         } else {
             insert(2 * position + 1, node);
         }
     }
 
-    private void balance(T[] subTree, int a, int b) {
+    private void balance(Object[] subTree, int a, int b) {
         if (a > b) return;
         int m = (a + b) / 2;
         insert(1, subTree[m]);
@@ -156,7 +193,7 @@ public class BinaryTree<T extends Comparable<T>> implements BinaryTreeApi<T> {
         balance(subTree, m + 1, b);
     }
 
-    private void forEach(int subTreeNum, OnNextListener<T> listener) {
+    private void forEach(int subTreeNum, OnNextListener listener) {
         if (subTreeNum >= capacity || nodes[subTreeNum] == null) return;
         forEach(2 * subTreeNum, listener);
         listener.toDo(nodes[subTreeNum]);

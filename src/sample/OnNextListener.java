@@ -1,5 +1,5 @@
 package sample;
 
-public interface OnNextListener<T> {
-    void toDo(T node);
+public interface OnNextListener {
+    void toDo(Object node);
 }

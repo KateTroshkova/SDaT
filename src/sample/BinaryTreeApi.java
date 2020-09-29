@@ -1,15 +1,26 @@
 package sample;
 
-public interface BinaryTreeApi<T extends Comparable<T>> {
+import java.io.InputStreamReader;
+
+public interface BinaryTreeApi {
+
+    UserTypeBuilder getBuilder();
+
+    void setBuilder(UserTypeBuilder builder);
+
     int size(int subTreeNum);
 
-    T get(int position);
+    Object get(int position);
 
-    void insert(T node);
+    void insertRnd();
+
+    boolean insertNext(InputStreamReader reader);
+
+    void insertFrom(String source);
 
     void delete(int position);
 
-    void balance();
+    BinaryTree balance();
 
-    void forEach(OnNextListener<T> onNextListener);
+    void forEach(OnNextListener onNextListener);
 }

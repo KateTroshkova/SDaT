@@ -1,37 +1,32 @@
 package sample;
 
-import java.security.SecureRandom;
-
 public class Main/* extends Application */ {
-
-    private static final String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static SecureRandom rnd = new SecureRandom();
 
     public static void main(String[] args) {
         //launch(args);
-        BinaryTreeApi<Node<String>> tree = new BinaryTree<>();
+        UserTypeBuilder builder = TypeFactory.getByName("String");
+        BinaryTreeApi tree = new BinaryTree();
+        tree.setBuilder(builder);
         for (int i = 0; i < 15; i++) {
-            tree.insert(new Node<>(randomString(4)));
-            if (i > 2) {
-                tree.balance();
+            tree.insertRnd();
+            if (i > 0) {
+                tree = tree.balance();
             }
         }
-        System.out.println(tree.get(1).getValue());
-        tree.delete(1);
-        tree.balance();
-        tree.forEach(node -> {
-            String newValue = node.getValue() + "~";
-            node.setValue(newValue);
-        });
+        System.out.println("Тестовая программа для лабораторной 1 (консольное бинарное дерево)");
+        System.out.println("Заполненное случайными строками и сбалансированное дерево");
         System.out.println(tree.toString());
-    }
-
-    private static String randomString(int length) {
-        StringBuilder sb = new StringBuilder(length);
-        int maxLength = CHARS.length();
-        for (int i = 0; i < length; i++)
-            sb.append(CHARS.charAt(rnd.nextInt(maxLength)));
-        return sb.toString();
+        System.out.println("...");
+        System.out.print("Элемент для удаления ");
+        System.out.println(tree.get(1));
+        tree.delete(1);
+        tree = tree.balance();
+        System.out.println("Дерево без удаленного элемента");
+        System.out.println(tree.toString());
+        System.out.println("Операция для каждого элемента дерева: вывод заглавными буквами");
+        tree.forEach(node -> {
+            System.out.print(((String) node).toUpperCase() + " ");
+        });
     }
 
 /*    @Override
