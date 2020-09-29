@@ -1,10 +1,11 @@
 package sample;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TypeFactory {
 
-    public static ArrayList<String> getArrayListNames() {
+    public static List<String> getListNames() {
         ArrayList<String> builders = new ArrayList<>();
         builders.add("String");
         return builders;

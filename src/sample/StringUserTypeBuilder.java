@@ -11,7 +11,7 @@ public class StringUserTypeBuilder implements UserTypeBuilder {
     private InputStreamReader currentIO;
     private Scanner scanner;
 
-    private static String randomString(int length) {
+    private String randomString(int length) {
         StringBuilder sb = new StringBuilder(length);
         int maxLength = CHARS.length();
         for (int i = 0; i < length; i++)
