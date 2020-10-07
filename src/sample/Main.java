@@ -1,12 +1,15 @@
 package sample;
 
-public class Main/* extends Application */ {
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+public class Main extends Application {
 
     public static void main(String[] args) {
-        //launch(args);
-        UserTypeBuilder builder = TypeFactory.getByName("String");
-        BinaryTreeApi tree = new BinaryTree();
-        tree.setBuilder(builder);
+        launch(args);
+        /*BinaryTreeApi tree = new BinaryTree();
+        tree.setBuilder(TypeFactory.getByName("String"));
         for (int i = 0; i < 15; i++) {
             tree.insertRnd();
             if (i > 0) {
@@ -26,14 +29,18 @@ public class Main/* extends Application */ {
         System.out.println("Операция для каждого элемента дерева: вывод заглавными буквами");
         tree.forEach(node -> {
             System.out.print(((String) node).toUpperCase() + " ");
-        });
+        });*/
     }
 
-/*    @Override
+    @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setTitle("SDAT2");
+        MainScene mainScene = new MainScene();
+        Scene scene = new Scene(mainScene, 620, 400);
+        primaryStage.setScene(scene);
+        primaryStage.sizeToScene();
         primaryStage.show();
-    }*/
+        primaryStage.setMinWidth(scene.getWidth());
+        primaryStage.setMinHeight(scene.getHeight());
+    }
 }
