@@ -38,6 +38,19 @@ public class BinaryTree implements BinaryTreeApi {
         return 1 + size(2 * subTreeNum) + size(2 * subTreeNum + 1);
     }
 
+    public int level(int position) {
+        int index = getIndex(position, 1);
+        return level(index, 0);
+    }
+
+    public int level(int index, int level) {
+        while (index / 2 > 0) {
+            index /= 2;
+            level++;
+        }
+        return level + 1;
+    }
+
     @Override
     public Object get(int position) {
         if (position < 1 || position >= capacity) return null;

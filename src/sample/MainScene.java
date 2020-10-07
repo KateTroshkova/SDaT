@@ -68,6 +68,10 @@ public class MainScene extends BorderPane {
         });
         deleteIdButton.setOnAction(event -> {
             tree.delete(Integer.parseInt(deleteIdField.getText()));
+            //tree = tree.balance();
+            drawTree();
+        });
+        balanceButton.setOnAction(event -> {
             tree = tree.balance();
             drawTree();
         });
