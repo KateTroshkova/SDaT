@@ -1,6 +1,6 @@
 package sample;
 
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * Array cast is one of the suggested ways of implementing a generic collection in Effective Java; Item 26.
@@ -131,6 +131,30 @@ public class BinaryTree implements BinaryTreeApi {
         return toStringRecursive(1, 0, "");
     }
 
+    public void readFrom(String url) {
+        try {
+            InputStream inputStream = new FileInputStream(url);
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            boolean hasNext = insertNext(inputStreamReader);
+            while (hasNext) {
+                hasNext = insertNext(inputStreamReader);
+            }
+            inputStreamReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void save(String url) {
+        File file = new File(url);
+        file.getParentFile().mkdirs();
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            String fileContent = toString().trim();
+            fileWriter.write(fileContent);
+        } catch (IOException ignored) {
+        }
+    }
+
     private void initEmpty() {
         //Нумерация начинается с 1, т.к. данные храним в массиве
         capacity = 2;
@@ -140,13 +164,13 @@ public class BinaryTree implements BinaryTreeApi {
     private String toStringRecursive(int subTreeNum, int level, String res) {
         if (subTreeNum >= capacity || nodes[subTreeNum] == null) return res;
         res = toStringRecursive(2 * subTreeNum, level + 1, res);
-        res += "\n";
-        StringBuilder resBuilder = new StringBuilder(res);
-        int maxLevel = (int) Math.sqrt(capacity);
-        for (int i = 0; i < maxLevel - level; i++) {
-            resBuilder.append("    ");
-        }
-        res = resBuilder.toString();
+        res += " ";
+        //StringBuilder resBuilder = new StringBuilder(res);
+        //int maxLevel = (int) Math.sqrt(capacity);
+        //for (int i = 0; i < maxLevel - level; i++) {
+        //    resBuilder.append("    ");
+        //}
+        //res = resBuilder.toString();
         res += builder.toString(nodes[subTreeNum]);
         res = toStringRecursive(2 * subTreeNum + 1, level + 1, res);
         return res;

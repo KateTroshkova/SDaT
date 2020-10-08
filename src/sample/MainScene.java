@@ -37,6 +37,8 @@ public class MainScene extends BorderPane {
     private TextField getResultField;
     @FXML
     private Pane treeField;
+    @FXML
+    private TextField urlField;
 
     private BinaryTree tree;
     private Canvas canvas;
@@ -72,6 +74,15 @@ public class MainScene extends BorderPane {
             drawTree();
         });
         balanceButton.setOnAction(event -> {
+            tree = tree.balance();
+            drawTree();
+        });
+        saveButton.setOnAction(event -> {
+            //C:\Users\Екатерина\Desktop\sdat\tree.txt
+            tree.save(urlField.getText());
+        });
+        loadButton.setOnAction(event -> {
+            tree.readFrom(urlField.getText());
             tree = tree.balance();
             drawTree();
         });
