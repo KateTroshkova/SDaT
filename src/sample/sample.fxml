@@ -17,7 +17,7 @@
             <children>
                 <HBox prefHeight="100.0" prefWidth="200.0">
                     <children>
-                        <ChoiceBox prefWidth="150.0"/>
+                        <ChoiceBox fx:id="typeBox" prefWidth="150.0"/>
                         <TextField fx:id="urlField" prefHeight="30.0" prefWidth="450.0"/>
                     </children>
                 </HBox>

@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -39,14 +40,17 @@ public class MainScene extends BorderPane {
     private Pane treeField;
     @FXML
     private TextField urlField;
+    @FXML
+    private ChoiceBox<String> typeBox;
 
     private BinaryTree tree;
     private Canvas canvas;
     private GraphicsContext gc;
+    private String type = "Dolphin";
 
     public MainScene() {
         tree = new BinaryTree();
-        tree.setBuilder(TypeFactory.getByName("String")); //TODO
+        tree.setBuilder(TypeFactory.getByName(type)); //TODO
         loadFXML();
     }
 
@@ -61,16 +65,18 @@ public class MainScene extends BorderPane {
         }
         addIdButton.setOnAction(event -> {
             tree.insertFrom(addIdField.getText());
-            //tree = tree.balance();
             drawTree();
         });
         getIdButton.setOnAction(event -> {
             Object value = tree.get(Integer.parseInt(getIdField.getText()));
-            getResultField.setText(value.toString());
+            if (value != null) {
+                getResultField.setText(value.toString());
+            } else {
+                getResultField.setText("No value!");
+            }
         });
         deleteIdButton.setOnAction(event -> {
             tree.delete(Integer.parseInt(deleteIdField.getText()));
-            //tree = tree.balance();
             drawTree();
         });
         balanceButton.setOnAction(event -> {

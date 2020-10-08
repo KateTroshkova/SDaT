@@ -140,8 +140,7 @@ public class BinaryTree implements BinaryTreeApi {
                 hasNext = insertNext(inputStreamReader);
             }
             inputStreamReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 
@@ -165,12 +164,6 @@ public class BinaryTree implements BinaryTreeApi {
         if (subTreeNum >= capacity || nodes[subTreeNum] == null) return res;
         res = toStringRecursive(2 * subTreeNum, level + 1, res);
         res += " ";
-        //StringBuilder resBuilder = new StringBuilder(res);
-        //int maxLevel = (int) Math.sqrt(capacity);
-        //for (int i = 0; i < maxLevel - level; i++) {
-        //    resBuilder.append("    ");
-        //}
-        //res = resBuilder.toString();
         res += builder.toString(nodes[subTreeNum]);
         res = toStringRecursive(2 * subTreeNum + 1, level + 1, res);
         return res;
