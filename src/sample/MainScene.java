@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
@@ -46,11 +48,10 @@ public class MainScene extends BorderPane {
     private BinaryTree tree;
     private Canvas canvas;
     private GraphicsContext gc;
-    private String type = "Dolphin";
+    private String type = "Int";
 
     public MainScene() {
         tree = new BinaryTree();
-        tree.setBuilder(TypeFactory.getByName(type)); //TODO
         loadFXML();
     }
 
@@ -63,11 +64,16 @@ public class MainScene extends BorderPane {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+        createButton.setOnAction(event -> {
+            tree.setBuilder(TypeFactory.getByName(type));
+        });
         addIdButton.setOnAction(event -> {
+            if (tree.getBuilder() == null) return;
             tree.insertFrom(addIdField.getText());
             drawTree();
         });
         getIdButton.setOnAction(event -> {
+            if (tree.getBuilder() == null) return;
             Object value = tree.get(Integer.parseInt(getIdField.getText()));
             if (value != null) {
                 getResultField.setText(value.toString());
@@ -76,7 +82,9 @@ public class MainScene extends BorderPane {
             }
         });
         deleteIdButton.setOnAction(event -> {
+            if (tree.getBuilder() == null) return;
             tree.delete(Integer.parseInt(deleteIdField.getText()));
+            System.out.println(tree.toString());
             drawTree();
         });
         balanceButton.setOnAction(event -> {
@@ -91,6 +99,13 @@ public class MainScene extends BorderPane {
             tree.readFrom(urlField.getText());
             tree = tree.balance();
             drawTree();
+        });
+        ObservableList<String> types = FXCollections.observableArrayList(TypeFactory.getListNames());
+        typeBox.setItems(types);
+        typeBox.setValue("String");
+        typeBox.setOnAction(event -> {
+            type = typeBox.getValue();
+            System.out.println(type);
         });
         canvas = new Canvas(1900, 1900);
         gc = canvas.getGraphicsContext2D();

@@ -85,6 +85,7 @@ public class BinaryTree implements BinaryTreeApi {
     public void delete(int position) {
         if (position < 1 || position >= capacity) return;
         int index = getIndex(position, 1);
+        if (nodes[index] == null) return;
         if (nodes[2 * index + 1] == null && nodes[2 * index] == null) nodes[index] = null; //нет потомков
         if (nodes[2 * index] != null && nodes[2 * index + 1] == null) { //только левый потомок
             nodes[index] = nodes[2 * index];
