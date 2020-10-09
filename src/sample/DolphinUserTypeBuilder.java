@@ -51,7 +51,7 @@ public class DolphinUserTypeBuilder implements UserTypeBuilder {
             int age = Integer.parseInt(content[2]);
             int smart = Integer.parseInt(content[3]);
             return new Dolphin(name, weight, age, smart);
-        } catch (NumberFormatException ignored) {
+        } catch (NumberFormatException | ArrayIndexOutOfBoundsException ignored) {
             return null;
         }
     }

@@ -48,7 +48,8 @@ public class MainScene extends BorderPane {
     private BinaryTree tree;
     private Canvas canvas;
     private GraphicsContext gc;
-    private String type = "Int";
+    private UserTypeBuilder builder;
+    private String type = "String";
 
     public MainScene() {
         tree = new BinaryTree();
@@ -65,27 +66,21 @@ public class MainScene extends BorderPane {
             throw new RuntimeException(exception);
         }
         createButton.setOnAction(event -> {
-            tree.setBuilder(TypeFactory.getByName(type));
+            builder = TypeFactory.getByName(type);
+            tree.setBuilder(builder);
+            drawTree();
         });
         addIdButton.setOnAction(event -> {
             if (tree.getBuilder() == null) return;
-            tree.insertFrom(addIdField.getText());
+            Object value = builder.parseValue(addIdField.getText());
+            tree.insert(value);
             drawTree();
         });
         getIdButton.setOnAction(event -> {
-            if (tree.getBuilder() == null) return;
-            Object value = tree.get(Integer.parseInt(getIdField.getText()));
-            if (value != null) {
-                getResultField.setText(value.toString());
-            } else {
-                getResultField.setText("No value!");
-            }
+            getItem();
         });
         deleteIdButton.setOnAction(event -> {
-            if (tree.getBuilder() == null) return;
-            tree.delete(Integer.parseInt(deleteIdField.getText()));
-            System.out.println(tree.toString());
-            drawTree();
+            deleteItem();
         });
         balanceButton.setOnAction(event -> {
             tree = tree.balance();
@@ -96,6 +91,10 @@ public class MainScene extends BorderPane {
             tree.save(urlField.getText());
         });
         loadButton.setOnAction(event -> {
+            if (builder == null) {
+                builder = TypeFactory.getByName(type);
+                tree.setBuilder(builder);
+            }
             tree.readFrom(urlField.getText());
             tree = tree.balance();
             drawTree();
@@ -105,11 +104,34 @@ public class MainScene extends BorderPane {
         typeBox.setValue("String");
         typeBox.setOnAction(event -> {
             type = typeBox.getValue();
-            System.out.println(type);
         });
         canvas = new Canvas(1900, 1900);
         gc = canvas.getGraphicsContext2D();
         treeField.getChildren().add(canvas);
+    }
+
+    private void getItem() {
+        if (builder == null) return;
+        try {
+            Object value = tree.get(Integer.parseInt(getIdField.getText()));
+            if (value != null) {
+                getResultField.setText(value.toString());
+            } else {
+                getResultField.setText("No value!");
+            }
+        } catch (NumberFormatException ignored) {
+        }
+    }
+
+    private void deleteItem() {
+        if (builder == null) return;
+        try {
+            tree = tree.balance();
+            tree.delete(Integer.parseInt(deleteIdField.getText()));
+            System.out.println(tree.toString());
+            drawTree();
+        } catch (NumberFormatException ignored) {
+        }
     }
 
     private void drawTree() {

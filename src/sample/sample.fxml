@@ -52,7 +52,7 @@
                         <TextField fx:id="getIdField" prefHeight="30.0" prefWidth="100.0"/>
                         <Button fx:id="getIdButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0"
                                 text="Найти"/>
-                        <TextField fx:id="getResultField"/>
+                        <TextField fx:id="getResultField" editable="false"/>
                     </children>
                 </HBox>
             </children>

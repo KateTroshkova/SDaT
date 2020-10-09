@@ -38,12 +38,10 @@ public class BinaryTree implements BinaryTreeApi {
         return 1 + size(2 * subTreeNum) + size(2 * subTreeNum + 1);
     }
 
+    @Override
     public int level(int position) {
         int index = getIndex(position, 1);
-        return level(index, 0);
-    }
-
-    public int level(int index, int level) {
+        int level = 0;
         while (index / 2 > 0) {
             index /= 2;
             level++;
@@ -57,28 +55,9 @@ public class BinaryTree implements BinaryTreeApi {
         return get(position, 1);
     }
 
-    // not safe!
-    /*@Override
-    public void insert(Object node) {
-        insert(1, node);
-    }*/
-
     @Override
-    public void insertRnd() {
-        insert(1, builder.create());
-    }
-
-    @Override
-    public boolean insertNext(InputStreamReader reader) {
-        Object value = builder.readValue(reader);
-        if (value == null) return false;
-        insert(1, value);
-        return true;
-    }
-
-    @Override
-    public void insertFrom(String source) {
-        insert(1, builder.parseValue(source));
+    public void insert(Object o) {
+        insert(1, o);
     }
 
     @Override
@@ -86,6 +65,10 @@ public class BinaryTree implements BinaryTreeApi {
         if (position < 1 || position >= capacity) return;
         int index = getIndex(position, 1);
         if (nodes[index] == null) return;
+        if (index == size(1)) {
+            nodes[index] = null;
+            return;
+        }
         if (nodes[2 * index + 1] == null && nodes[2 * index] == null) nodes[index] = null; //нет потомков
         if (nodes[2 * index] != null && nodes[2 * index + 1] == null) { //только левый потомок
             nodes[index] = nodes[2 * index];
@@ -132,19 +115,23 @@ public class BinaryTree implements BinaryTreeApi {
         return toStringRecursive(1, 0, "");
     }
 
+    @Override
     public void readFrom(String url) {
+        initEmpty();
         try {
             InputStream inputStream = new FileInputStream(url);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            boolean hasNext = insertNext(inputStreamReader);
-            while (hasNext) {
-                hasNext = insertNext(inputStreamReader);
+            Object value = "";//builder.readValue(inputStreamReader);
+            while (value != null) {
+                value = builder.readValue(inputStreamReader);
+                insert(1, value);
             }
             inputStreamReader.close();
         } catch (IOException ignored) {
         }
     }
 
+    @Override
     public void save(String url) {
         File file = new File(url);
         file.getParentFile().mkdirs();
@@ -205,6 +192,7 @@ public class BinaryTree implements BinaryTreeApi {
             nodes = new Object[capacity];
             System.arraycopy(values, 0, nodes, 0, values.length);
         }
+        if (builder.compare(node, nodes[position]) == 0) return;
         if (nodes[position] == null) {
             nodes[position] = node;
             return;

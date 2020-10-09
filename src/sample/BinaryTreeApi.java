@@ -1,7 +1,5 @@
 package sample;
 
-import java.io.InputStreamReader;
-
 public interface BinaryTreeApi {
 
     UserTypeBuilder getBuilder();
@@ -12,15 +10,17 @@ public interface BinaryTreeApi {
 
     Object get(int position);
 
-    void insertRnd();
-
-    boolean insertNext(InputStreamReader reader);
-
-    void insertFrom(String source);
+    void insert(Object o);
 
     void delete(int position);
 
     BinaryTree balance();
 
     void forEach(OnNextListener onNextListener);
+
+    int level(int position);
+
+    void readFrom(String url);
+
+    void save(String url);
 }
