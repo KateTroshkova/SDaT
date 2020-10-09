@@ -27,9 +27,11 @@ public class BinaryTree implements BinaryTreeApi {
 
     @Override
     public void setBuilder(UserTypeBuilder builder) {
-        this.builder = builder;
-        // can not work with old values
-        initEmpty();
+        if (this.builder == null || !this.builder.getName().equals(builder.getName())) {
+            this.builder = builder;
+            // can not work with old values
+            initEmpty();
+        }
     }
 
     @Override
@@ -118,15 +120,12 @@ public class BinaryTree implements BinaryTreeApi {
     @Override
     public void readFrom(String url) {
         initEmpty();
-        try {
-            InputStream inputStream = new FileInputStream(url);
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            Object value = "";//builder.readValue(inputStreamReader);
+        try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(url))) {
+            Object value = "";
             while (value != null) {
                 value = builder.readValue(inputStreamReader);
                 insert(1, value);
             }
-            inputStreamReader.close();
         } catch (IOException ignored) {
         }
     }

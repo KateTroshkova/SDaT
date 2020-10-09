@@ -45,7 +45,7 @@ public class MainScene extends BorderPane {
     @FXML
     private ChoiceBox<String> typeBox;
 
-    private BinaryTree tree;
+    private BinaryTreeApi tree;
     private Canvas canvas;
     private GraphicsContext gc;
     private UserTypeBuilder builder;
@@ -66,8 +66,7 @@ public class MainScene extends BorderPane {
             throw new RuntimeException(exception);
         }
         createButton.setOnAction(event -> {
-            builder = TypeFactory.getByName(type);
-            tree.setBuilder(builder);
+            create();
             drawTree();
         });
         addIdButton.setOnAction(event -> {
@@ -92,8 +91,7 @@ public class MainScene extends BorderPane {
         });
         loadButton.setOnAction(event -> {
             if (builder == null) {
-                builder = TypeFactory.getByName(type);
-                tree.setBuilder(builder);
+                create();
             }
             tree.readFrom(urlField.getText());
             tree = tree.balance();
@@ -117,9 +115,10 @@ public class MainScene extends BorderPane {
             if (value != null) {
                 getResultField.setText(value.toString());
             } else {
-                getResultField.setText("No value!");
+                getResultField.setText("Нет данных");
             }
         } catch (NumberFormatException ignored) {
+            getResultField.setText("Введите логический номер");
         }
     }
 
@@ -128,10 +127,14 @@ public class MainScene extends BorderPane {
         try {
             tree = tree.balance();
             tree.delete(Integer.parseInt(deleteIdField.getText()));
-            System.out.println(tree.toString());
             drawTree();
         } catch (NumberFormatException ignored) {
         }
+    }
+
+    private void create() {
+        builder = TypeFactory.getByName(type);
+        tree.setBuilder(builder);
     }
 
     private void drawTree() {
